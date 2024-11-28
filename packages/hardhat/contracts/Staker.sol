@@ -27,7 +27,7 @@ contract Staker {
      */
     modifier withdrawalDeadlineReached(bool requireReached) {
         uint256 timeRemaining = withdrawalTimeLeft();
-        if (requiredReached) {
+        if (requireReached) {
             require(timeRemaining == 0, "Withdrawal period is not reached yet");
         } else {
             require(timeRemaining > 0, "Withdrawal period has been reached");
@@ -55,12 +55,12 @@ contract Staker {
         _;
     }
 
-    constructor(address exampleExternalContract) {
+    constructor(address exampleExternalContractAddress) {
         exampleExternalContract = ExampleExternalContract(exampleExternalContractAddress);
     }
 
     // Stake function for a user to stake ETH in our contract
-    function stake() public payable withdrawalDeadline(fale) claimDeadlineReached(false) {
+    function stake() public payable withdrawalDeadlineReached(false) claimDeadlineReached(false) {
         balances[msg.sender] = balances[msg.sender] + msg.value;
         depositTimestamps[msg.sender] = block.timestamp;
         emit Stake(msg.sender, msg.value);
@@ -84,8 +84,8 @@ contract Staker {
      * Allows any user to repatriate "unproductive" funds that are left in the staking contract
      * past the defined withdrawal period
      */
-    function execute() public claimDeadline(true) notCompleted {
-        uint256 cotnractBalance = address(this).balance;
+    function execute() public claimDeadlineReached(true) notCompleted {
+        uint256 contractBalance = address(this).balance;
         exampleExternalContract.complete{ value: address(this).balance }();
     }
 
